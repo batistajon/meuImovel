@@ -11,7 +11,7 @@ abstract class AbstractRepository
 	 *
 	 * @var mixed
 	 */
-	private $model;
+	protected $model;
 		
 	/**
 	 * Method __construct
@@ -32,9 +32,9 @@ abstract class AbstractRepository
 	 *
 	 * @return void
 	 */
-	public function selectCoditions($coditions): void
+	public function selectConditions($conditions): void
 	{
-		$expressions = explode(';', $coditions);
+		$expressions = explode(';', $conditions);
 		foreach($expressions as $e) {
 			$exp = explode(':', $e);
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Api\ApiMessages;
 use App\Http\Controllers\Controller;
 use App\Models\RealState;
 use App\Repository\RealStateRepository;
@@ -25,13 +26,13 @@ class RealStateSearchController extends Controller
      * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
-    {
-        $realState = $this->realState;
+    {   
+        $repository = new RealStateRepository($this->realState);
 
-        $repository = new RealStateRepository($realState);
+        $repository->setLocation($request->all(['state', 'city']));
 
-        if($request->has('coditions')) {
-		    $repository->selectCoditions($request->get('coditions'));
+        if($request->has('conditions')) {
+		    $repository->selectConditions($request->get('conditions'));
 	    }
 
 	    if($request->has('fields')) {
@@ -42,15 +43,27 @@ class RealStateSearchController extends Controller
             'data' => $repository->getResult()->paginate(10)
         ], 200);
     }
-
+    
     /**
-     * Display the specified resource.
+     * Method show
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $id $id [explicite description]
+     *
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
-        
+        try {
+            
+            $realState = $this->realState->with('address')->with('photos')->findOrFail($id);
+
+            return response()->json([
+                'data' => $realState
+            ], 200);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 401);
+        }
     }
 }    

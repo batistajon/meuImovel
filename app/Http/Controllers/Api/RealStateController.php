@@ -105,7 +105,7 @@ class RealStateController extends Controller
     {
         try {
 
-            $realState = Auth::guard('api')->user()->real_state()->with('photos')->findOrFail($id);
+            $realState = Auth::guard('api')->user()->real_state()->with('photos')->with('address')->findOrFail($id);
 
             return response()->json(['data' => $realState], 200);
 
